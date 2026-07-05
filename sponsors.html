@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Partner With CodeGyaan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#05060c;
+    --void-2:#0b0d18;
+    --ink:#edece6;
+    --ink-dim:#949aae;
+    --ink-faint:#5c6178;
+    --signal:#6ff3d6;
+    --line:rgba(237,236,230,0.11);
+    --line-strong:rgba(237,236,230,0.22);
+    --f-display:'Fraunces', serif;
+    --f-sans:'Space Grotesk', sans-serif;
+    --f-mono:'JetBrains Mono', monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; background:var(--void); color:var(--ink); }
+  body{ min-height:100vh; font-family:var(--f-sans); background:var(--void); }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:1220px; margin:0 auto; padding:0 clamp(20px,5vw,64px); }
+  .eyebrow{ font-family:var(--f-mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--signal); display:inline-flex; gap:10px; align-items:center; }
+  .eyebrow::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--signal); box-shadow:0 0 12px rgba(111,243,214,0.24); }
+  .hero{ padding:120px 0 80px; display:grid; grid-template-columns:1fr 0.9fr; gap:48px; align-items:center; }
+  .hero h1{ font-family:var(--f-display); font-style:italic; font-size:clamp(48px,6vw,78px); line-height:1.02; max-width:620px; }
+  .hero p{ margin-top:24px; max-width:620px; font-size:16px; line-height:1.8; color:var(--ink-dim); }
+  .hero-actions{ display:flex; gap:16px; flex-wrap:wrap; margin-top:28px; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:14px 26px; border-radius:999px; font-family:var(--f-mono); font-size:12px; letter-spacing:0.12em; text-transform:uppercase; border:1px solid transparent; cursor:pointer; }
+  .btn-primary{ background:var(--signal); color:var(--void); border-color:transparent; }
+  .btn-ghost{ color:var(--ink); border-color:rgba(255,255,255,0.12); }
+  .hero-card{ position:relative; background:rgba(10,13,25,0.96); border:1px solid rgba(111,243,214,0.12); border-radius:34px; padding:34px 32px; box-shadow:0 40px 100px -50px rgba(0,0,0,0.7); overflow:hidden; }
+  .hero-card:before{ content:''; position:absolute; inset:0; background:radial-gradient(circle at top left, rgba(111,243,214,0.16), transparent 18%), radial-gradient(circle at bottom right, rgba(155,140,255,0.12), transparent 20%); pointer-events:none; }
+  .hero-card h2{ font-family:var(--f-display); font-style:italic; font-size:28px; line-height:1.1; margin-bottom:16px; position:relative; z-index:1; }
+  .hero-card p{ color:var(--ink-dim); line-height:1.75; margin-bottom:24px; position:relative; z-index:1; }
+  .hero-card strong{ display:block; color:var(--ink); margin-bottom:12px; }
+  .section{ padding-bottom:80px; }
+  .section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:40px; }
+  .section-head h2{ font-family:var(--f-display); font-style:italic; font-size:clamp(36px,5vw,54px); line-height:1.05; }
+  .section-head .label{ font-family:var(--f-mono); font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-faint); }
+  .text-block{ max-width:760px; color:var(--ink-dim); line-height:1.8; font-size:16px; }
+  .text-block p{ margin-bottom:18px; }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .feature-card{ background:rgba(14,17,32,0.96); border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:28px; transition:transform .3s ease, border-color .3s ease; }
+  .sponsor-list{ margin-top:22px; padding-left:20px; color:var(--ink-dim); display:grid; gap:12px; }
+  .sponsor-list li{ line-height:1.8; }
+  .feature-card:hover{ transform:translateY(-4px); border-color:rgba(111,243,214,0.2); }
+  .feature-card strong{ display:block; margin-bottom:12px; color:var(--ink); font-size:15px; }
+  .feature-card p{ color:var(--ink-dim); line-height:1.75; font-size:14px; }
+  .line-list{ display:grid; gap:16px; }
+  .line-item{ position:relative; padding-left:28px; color:var(--ink-dim); }
+  .line-item::before{ content:''; position:absolute; left:0; top:8px; width:12px; height:12px; border-radius:50%; background:var(--signal); box-shadow:0 0 14px rgba(111,243,214,0.2); }
+  .line-item h4{ font-family:var(--f-sans); font-size:15px; margin-bottom:8px; color:var(--ink); }
+  .badge-row{ display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
+  .badge{ display:inline-flex; align-items:center; justify-content:center; padding:12px 18px; border-radius:999px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:var(--ink); font-size:13px; }
+  .split-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .value-panel{ background:rgba(14,17,32,0.96); border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:28px; }
+  .value-panel strong{ display:block; margin-bottom:12px; color:var(--ink); }
+  .value-panel p{ color:var(--ink-dim); line-height:1.75; font-size:14px; }
+  .kit-card{ background:rgba(10,13,25,0.98); border:1px solid rgba(111,243,214,0.16); border-radius:28px; padding:36px; box-shadow:0 40px 100px -48px rgba(0,0,0,0.7); }
+  .kit-card h2{ font-family:var(--f-display); font-style:italic; font-size:32px; margin-bottom:18px; }
+  .kit-card p{ color:var(--ink-dim); line-height:1.75; max-width:720px; margin-bottom:24px; }
+  .contact-card{ background:rgba(14,17,32,0.96); border:1px solid rgba(255,255,255,0.06); border-radius:28px; padding:34px; }
+  .contact-card h2{ font-family:var(--f-display); font-style:italic; font-size:30px; margin-bottom:18px; }
+  .contact-card p{ color:var(--ink-dim); line-height:1.75; margin-bottom:14px; }
+  .contact-card a{ color:var(--signal); }
+  .footer{ padding:40px 0 60px; color:var(--ink-faint); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; border-top:1px solid rgba(237,236,230,0.08); }
+  @media (max-width:980px){ .hero, .split-grid, .grid-2{ grid-template-columns:1fr; } }
+  @media (max-width:720px){ .hero{ padding-top:80px; } .hero-actions{ flex-direction:column; align-items:start; } }
+</style>
+</head>
+<body>
+  <nav class="wrap" style="padding-top:28px; padding-bottom:18px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="font-family:var(--f-display); font-style:italic; font-size:20px;">CodeGyaan <small style="font-family:var(--f-mono); font-size:10px; letter-spacing:0.16em; color:var(--ink-faint);">OLAP 2026</small></div>
+    <div style="display:flex; gap:22px; align-items:center;">
+      <a href="codegyan-landing-page.html" style="color:var(--ink-dim); font-size:13px;">Home</a>
+      <a href="#" style="color:var(--ink-dim); font-size:13px;">Contact</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Partner With Us</div>
+        <h1>Partner With The Next Generation of Innovators</h1>
+        <p>Support one of the most exciting student-led hackathons and connect with talented developers, designers, problem-solvers, and future technology professionals.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="mailto:techgen.club.mop@gmail.com">Partner With Us</a>
+          <a class="btn btn-ghost" href="#sponsor-kit">Download Sponsor Kit</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h2>Why partner with CodeGyaan</h2>
+        <p>CodeGyaan is an inter-collegiate hackathon that brings together passionate innovators, developers, designers, and problem-solvers to create impactful technology solutions for real-world challenges.</p>
+        <p>Centered around the theme "AI for Inclusive Digital Transformation", the hackathon encourages participants to harness Artificial Intelligence to build solutions that are accessible, ethical, sustainable, and socially impactful.</p>
+        <strong>Connect directly with future talent, amplify your brand, and help shape a premium student experience.</strong>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Sponsorship Opportunities</h2>
+        <div class="label">Support formats</div>
+      </div>
+      <div class="text-block">
+        <p>We welcome support in various forms, including:</p>
+        <ul class="sponsor-list">
+          <li>Financial Sponsorship</li>
+          <li>Prize Sponsorship</li>
+          <li>Internship and Recruitment Partnerships</li>
+          <li>Workshop and Speaker Collaborations</li>
+          <li>Other Strategic Partnerships</li>
+        </ul>
+        <p>We are also open to discussing customized partnership opportunities that align with the objectives and interests of your organization.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Purpose of the Partnership</h2>
+        <div class="label">Why partner</div>
+      </div>
+      <div class="text-block">
+        <p>As part of our efforts to provide enriching learning experiences and industry exposure to students, we are seeking sponsorship and partnership support from organizations that share our commitment to innovation, technology, and education.</p>
+        <p>By partnering with TechGen Club, organizations will have the opportunity to connect with a dynamic student community, enhance their brand visibility, and contribute to initiatives that empower the next generation of technology professionals.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>What sponsorship can do</h2>
+        <div class="label">Partner benefits</div>
+      </div>
+      <div class="grid-2">
+        <div class="feature-card">
+          <strong>Brand visibility</strong>
+          <p>Secure logo placement on certificates, posters, invitations, digital banners, and event presentations.</p>
+        </div>
+        <div class="feature-card">
+          <strong>Talent engagement</strong>
+          <p>Connect with students through internships, recruitment partnerships, mentorship, and professional exposure.</p>
+        </div>
+        <div class="feature-card">
+          <strong>Learning collaboration</strong>
+          <p>Host workshops, speaker sessions, product demonstrations, and technical programs that amplify your expertise.</p>
+        </div>
+        <div class="feature-card">
+          <strong>Strategic partnership</strong>
+          <p>Build a tailored collaboration that supports your goals while contributing to student innovation and development.</p>
+        </div>
+      </div>
+      <div class="line-list" style="margin-top:32px;">
+        <div class="line-item"><h4>Event recognition</h4><p>Gain visibility through announcements, official communications, and event-stage recognition.</p></div>
+        <div class="line-item"><h4>Career promotion</h4><p>Promote internships, career opportunities, and speaking engagements to a motivated student audience.</p></div>
+        <div class="line-item"><h4>Customized support</h4><p>Discuss tailored sponsorship packages that match your organization’s objectives and interests.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Why this event matters</h2>
+        <div class="label">Impact overview</div>
+      </div>
+      <div class="split-grid">
+        <div class="value-panel"><strong>National hybrid reach</strong><p>Engage a nationwide student audience both online and during the Chennai finale.</p></div>
+        <div class="value-panel"><strong>Industry connection</strong><p>Build relationships through mentor sessions, talks, and networking opportunities.</p></div>
+        <div class="value-panel"><strong>Practical innovation</strong><p>See real projects and technical experimentation across emerging domains.</p></div>
+        <div class="value-panel"><strong>Talent pipeline</strong><p>Align with students working in healthcare, blockchain, fintech, automation, AR/VR, and cybersecurity.</p></div>
+        <div class="value-panel"><strong>Career exposure</strong><p>Support experiences that prepare students for internships, roles, and future professional paths.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Technology tracks</h2>
+        <div class="label">Event focus</div>
+      </div>
+      <div class="badge-row">
+        <span class="badge">Healthcare</span>
+        <span class="badge">Blockchain &amp; Web</span>
+        <span class="badge">FinTech</span>
+        <span class="badge">Automation</span>
+        <span class="badge">AR / VR</span>
+        <span class="badge">Cybersecurity</span>
+      </div>
+      <p class="text-block" style="margin-top:24px;">Detailed problem statements will be announced closer to the event.</p>
+    </section>
+
+    <section class="section" id="sponsor-kit">
+      <div class="kit-card">
+        <h2>Sponsor Kit</h2>
+        <p>Everything you need to know about partnering with CodeGyaan. The PDF will be uploaded later.</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="https://drive.google.com/file/d/11EnMwKlpiUniBXA5B2dIvcP6zDgYpgZM/view?usp=sharing" target="_blank" rel="noopener">Download Sponsor Kit</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="contact-card">
+        <h2>Contact</h2>
+        <p>Interested in partnering with us? We would love to discuss collaboration opportunities and create a partnership that aligns with your goals.</p>
+        <p><strong>TechGen Club</strong><br>Department of Computer Science<br>M.O.P. Vaishnav College for Women</p>
+        <p>Email: <a href="mailto:techgen.club.mop@gmail.com">techgen.club.mop@gmail.com</a></p>
+        <a class="btn btn-primary" href="mailto:techgen.club.mop@gmail.com">Contact Us</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <div>Copyright © OLAP 2026. All rights reserved.</div>
+    <div>Designed for sponsor collaboration.</div>
+  </footer>
+</body>
+</html>

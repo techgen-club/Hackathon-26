@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CodeGyaan — Transmission 2026</title>
+
+<!-- ============================================================
+  EVENT NAME: change the value of EVENT_NAME below (and nowhere
+  else) to rename the event once the final name is confirmed.
+  ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+  :root{
+    --void: #05060c;
+    --void-2: #0b0d18;
+    --void-3: #10132200;
+    --panel: #0e1120;
+    --ink: #edece6;
+    --ink-dim: #949aae;
+    --ink-faint: #5c6178;
+    --line: rgba(237,236,230,0.11);
+    --line-strong: rgba(237,236,230,0.22);
+    --signal: #6ff3d6;
+    --signal-dim: #6ff3d64d;
+    --flare: #ffb55e;
+    --violet: #9b8cff;
+    --radius: 2px;
+
+    --f-display: 'Fraunces', serif;
+    --f-sans: 'Space Grotesk', sans-serif;
+    --f-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; background:var(--void); }
+
+  body{
+    background:var(--void);
+    color:var(--ink);
+    font-family:var(--f-sans);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{ background:var(--signal); color:var(--void); }
+
+  a{ color:inherit; text-decoration:none; }
+
+  .eyebrow{
+    font-family:var(--f-mono);
+    font-size:11px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--signal);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:6px; height:6px;
+    background:var(--signal);
+    border-radius:50%;
+    box-shadow:0 0 8px 2px var(--signal-dim);
+    flex-shrink:0;
+    animation:blink 2.4s ease-in-out infinite;
+  }
+  @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:.25} }
+
+  :focus-visible{ outline:2px solid var(--signal); outline-offset:3px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- layout helpers ---------- */
+  .wrap{ max-width:1280px; margin:0 auto; padding:0 clamp(20px,5vw,64px); position:relative; }
+  section{ position:relative; }
+
+  /* ---------- NAV ---------- */
+  #nav{
+    position:fixed; top:0; left:0; right:0; z-index:200;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px clamp(20px,5vw,64px);
+    background:linear-gradient(to bottom, rgba(5,6,12,0.85), transparent);
+    backdrop-filter:blur(2px);
+  }
+  .logo{
+    font-family:var(--f-display); font-style:italic; font-weight:500;
+    font-size:20px; letter-spacing:0.01em; display:flex; align-items:baseline; gap:8px;
+  }
+  .logo small{ font-family:var(--f-mono); font-style:normal; font-size:9px; color:var(--ink-faint); letter-spacing:0.15em; }
+  .nav-links{ display:flex; gap:36px; align-items:center; }
+  .nav-links a{
+    font-size:13px; color:var(--ink-dim); position:relative; padding:4px 0;
+    transition:color .3s ease;
+  }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:var(--signal);
+    transition:width .35s ease;
+  }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-links a:hover::after{ width:100%; }
+  .nav-cta{
+    font-family:var(--f-mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    border:1px solid var(--line-strong); padding:9px 18px; color:var(--ink);
+    transition:all .3s ease; white-space:nowrap;
+  }
+  .nav-cta:hover{ background:var(--signal); border-color:var(--signal); color:var(--void); }
+  .nav-mobile-toggle{ display:none; }
+
+  @media (max-width:860px){
+    .nav-links{ display:none; }
+  }
+
+  /* ---------- HERO ---------- */
+  #hero{
+    height:100svh; min-height:640px; position:relative; overflow:hidden;
+    display:flex; flex-direction:column; justify-content:flex-end;
+  }
+  #hero-canvas{ position:absolute; inset:0; z-index:0; }
+  .hero-vignette{
+    position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(5,6,12,0.9) 10%, transparent 60%),
+      linear-gradient(to bottom, rgba(5,6,12,0.35) 0%, transparent 30%, transparent 60%, var(--void) 100%);
+  }
+  .hero-content{
+    position:relative; z-index:2;
+    padding:0 clamp(20px,5vw,64px) clamp(48px,8vh,96px);
+    display:grid; grid-template-columns:1fr auto; gap:24px; align-items:end;
+  }
+  .hero-coords{
+    position:absolute; top:110px; left:clamp(20px,5vw,64px); z-index:2;
+    font-family:var(--f-mono); font-size:11px; color:var(--ink-faint); letter-spacing:0.08em;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .hero-coords span{ color:var(--ink-dim); }
+  .hero-headline{
+    font-family:var(--f-display); font-style:italic; font-weight:400;
+    font-size:clamp(52px, 10vw, 148px); line-height:0.92; letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+  .hero-headline .accent{ color:var(--signal); font-style:normal; font-weight:500; }
+  .hero-tagline{
+    max-width:420px; font-size:16px; line-height:1.6; color:var(--ink-dim);
+    margin-top:18px; font-family:var(--f-sans);
+  }
+  .hero-sponsor-line{
+    position:absolute; bottom:42px; left:50%; transform:translateX(-50%); z-index:2;
+    display:flex; align-items:center; gap:12px; font-family:var(--f-mono); font-size:12px;
+    color:var(--signal); letter-spacing:0.22em; text-transform:uppercase;
+  }
+  .hero-sponsor-line::before{
+    content:''; width:80px; height:1px; background:var(--signal); opacity:.45;
+  }
+  .hero-sponsor-line .arrow{
+    font-size:16px; line-height:1;
+  }
+  .hero-side{
+    display:flex; flex-direction:column; align-items:flex-end; gap:22px;
+    text-align:right;
+  }
+  .hero-meta{
+    font-family:var(--f-mono); font-size:12px; color:var(--ink-dim); line-height:1.8;
+  }
+  .hero-meta strong{ color:var(--ink); font-weight:500; }
+  .hero-ctas{ display:flex; gap:14px; margin-top:8px; flex-wrap:wrap; justify-content:flex-end; }
+
+  .btn{
+    font-family:var(--f-mono); font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+    padding:15px 28px; border-radius:1px; cursor:pointer; display:inline-flex; align-items:center; gap:10px;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), background .35s ease, color .35s ease, border-color .35s ease;
+    border:1px solid transparent;
+  }
+  .btn-primary{ background:var(--signal); color:var(--void); }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 8px 30px -8px var(--signal-dim); }
+  .btn-ghost{ border-color:var(--line-strong); color:var(--ink); }
+  .btn-ghost:hover{ border-color:var(--signal); color:var(--signal); transform:translateY(-2px); }
+
+  .scroll-cue{
+    position:absolute; bottom:26px; left:50%; transform:translateX(-50%); z-index:2;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    font-family:var(--f-mono); font-size:10px; letter-spacing:0.2em; color:var(--ink-faint);
+  }
+  .scroll-cue .bar{ width:1px; height:36px; background:linear-gradient(to bottom, var(--signal), transparent); position:relative; overflow:hidden; }
+  .scroll-cue .bar::after{
+    content:''; position:absolute; top:-40%; left:0; width:100%; height:40%; background:var(--ink);
+    animation:sweep 2.2s ease-in-out infinite;
+  }
+  @keyframes sweep{ 0%{ top:-40% } 100%{ top:100% } }
+
+  @media (max-width:760px){
+    .hero-content{ grid-template-columns:1fr; }
+    .hero-side{ align-items:flex-start; text-align:left; }
+    .hero-ctas{ justify-content:flex-start; }
+    .hero-coords{ top:88px; }
+  }
+
+  /* ---------- SECTION LABEL SYSTEM ---------- */
+  .section-head{
+    display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
+    margin-bottom:56px; padding-top:120px; flex-wrap:wrap;
+  }
+  .section-head h2{
+    font-family:var(--f-display); font-style:italic; font-weight:400;
+    font-size:clamp(34px,5vw,58px); line-height:1.05; color:var(--ink);
+  }
+  .section-index{
+    font-family:var(--f-mono); font-size:12px; color:var(--ink-faint); letter-spacing:0.1em;
+    text-align:right;
+  }
+
+  /* ---------- ABOUT ---------- */
+  #about{ background:var(--void); padding-bottom:140px; }
+  .about-grid{
+    display:grid; grid-template-columns:0.9fr 1.1fr; gap:64px; align-items:start;
+  }
+  .about-copy{ font-size:17px; line-height:1.75; color:var(--ink-dim); }
+  .about-copy .drop{
+    font-family:var(--f-display); font-style:italic; font-size:70px; line-height:0.6;
+    float:left; margin-right:14px; margin-top:10px; color:var(--signal);
+  }
+  .about-copy p{ margin-bottom:20px; }
+  .about-pull{
+    font-family:var(--f-display); font-style:italic; font-size:22px; color:var(--ink);
+    border-left:1px solid var(--signal); padding-left:20px; margin-top:28px; line-height:1.5;
+  }
+  .about-visual{
+    position:relative; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+  }
+  .orbit-svg{ width:100%; height:100%; max-width:420px; }
+  .orbit-ring{ fill:none; stroke:var(--line); stroke-width:1; }
+  .orbit-dot{ fill:var(--signal); filter:drop-shadow(0 0 6px var(--signal)); }
+
+  @media (max-width:900px){
+    .about-grid{ grid-template-columns:1fr; }
+    .about-visual{ max-width:280px; margin:0 auto; }
+  }
+
+  /* ---------- HIGHLIGHTS (bento) ---------- */
+  #highlights{ background:var(--void-2); padding-bottom:140px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .bento{
+    display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:minmax(220px, auto); gap:24px; background:transparent;
+  }
+  .bento-card{
+    background:var(--void-2); padding:32px; position:relative; overflow:hidden;
+    display:flex; flex-direction:column; justify-content:flex-start;
+    min-height:240px;
+    transition:background .4s ease, transform .35s ease;
+  }
+  .bento-card:hover{ background:#12162a; }
+  .bento-card h3{ font-family:var(--f-sans); font-weight:600; font-size:18px; }
+  .bento-card p{ font-size:13px; color:var(--ink-dim); line-height:1.5; max-width:32ch; }
+  .bento-card .glyph{
+    position:absolute; font-family:var(--f-mono); font-size:11px; color:var(--ink-faint); top:24px; right:28px; letter-spacing:0.1em;
+  }
+  .bento-card .icon{ font-size:26px; }
+  .bento-card::before{
+    content:''; position:absolute; left:0; bottom:0; height:2px; width:0; background:var(--signal);
+    transition:width .5s ease;
+  }
+  .bento-card:hover::before{ width:100%; }
+
+  @media (max-width:900px){
+    .bento{ grid-template-columns:repeat(2,1fr); grid-auto-rows:auto; }
+    .b1,.b2,.b3,.b4,.b5,.b6{ grid-column:span 2; grid-row:span 1; padding:26px; min-height:150px; }
+  }
+
+  /* ---------- TRACKS ---------- */
+  #tracks{ background:var(--void); padding-bottom:150px; }
+  .track-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  .track-card{
+    --tc: var(--signal);
+    position:relative; border:1px solid var(--line); padding:30px 26px 26px;
+    min-height:270px; display:flex; flex-direction:column; justify-content:space-between;
+    overflow:hidden; transition:border-color .4s ease, transform .4s ease;
+    background:
+      radial-gradient(600px circle at var(--mx,50%) var(--my,0%), color-mix(in srgb, var(--tc) 14%, transparent), transparent 60%),
+      var(--void-2);
+  }
+  .track-card:hover{ border-color:var(--tc); transform:translateY(-4px); }
+  .track-num{ font-family:var(--f-mono); font-size:11px; color:var(--tc); letter-spacing:0.1em; }
+  .track-icon{
+    width:44px; height:44px; border:1px solid var(--line-strong); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:19px; margin:18px 0 20px;
+    color:var(--tc); transition:border-color .4s ease, box-shadow .4s ease;
+  }
+  .track-card:hover .track-icon{ border-color:var(--tc); box-shadow:0 0 22px -6px var(--tc); }
+  .track-card h3{ font-family:var(--f-display); font-style:italic; font-size:24px; font-weight:500; margin-bottom:10px; }
+  .track-card p{ font-size:13.5px; color:var(--ink-dim); line-height:1.6; margin-bottom:20px; }
+  .track-soon{
+    font-family:var(--f-mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--ink-faint); display:flex; align-items:center; gap:8px; padding-top:14px;
+    border-top:1px dashed var(--line);
+  }
+  .track-soon::before{
+    content:''; width:5px; height:5px; border-radius:50%; background:var(--tc); flex-shrink:0;
+    animation:blink 2s ease-in-out infinite;
+  }
+
+  @media (max-width:900px){ .track-grid{ grid-template-columns:1fr; } }
+  @media (min-width:901px) and (max-width:1180px){ .track-grid{ grid-template-columns:repeat(2,1fr); } }
+
+  /* ---------- JOURNEY ---------- */
+  #journey{ background:var(--void-2); padding-bottom:120px; border-top:1px solid var(--line); overflow:hidden; }
+  .journey-track{
+    position:relative; height:420px; margin-top:40px;
+  }
+  .journey-path{ position:absolute; inset:0; width:100%; height:100%; }
+  .journey-line{ fill:none; stroke:var(--line-strong); stroke-width:1.5; stroke-dasharray:4 6; }
+  .journey-line-fill{ fill:none; stroke:var(--signal); stroke-width:1.5; stroke-dasharray:1400; stroke-dashoffset:1400; }
+  .journey-node{
+    position:absolute; width:200px; transform:translate(-50%,-50%); text-align:center;
+  }
+  .journey-node .dot{
+    width:12px; height:12px; border-radius:50%; background:var(--void-2); border:2px solid var(--ink-faint);
+    margin:0 auto 14px; transition:all .5s ease; position:relative; z-index:2;
+  }
+  .journey-node.active .dot{ border-color:var(--signal); background:var(--signal); box-shadow:0 0 18px 3px var(--signal-dim); }
+  .journey-node .jn-index{ font-family:var(--f-mono); font-size:10px; color:var(--ink-faint); letter-spacing:0.15em; }
+  .journey-node h4{ font-family:var(--f-sans); font-weight:600; font-size:15px; margin:6px 0 6px; color:var(--ink-dim); transition:color .4s ease; }
+  .journey-node.active h4{ color:var(--ink); }
+  .journey-node p{ font-size:12px; color:var(--ink-faint); line-height:1.5; }
+
+  @media (max-width:1000px){
+    .journey-track{ height:auto; display:flex; flex-direction:column; gap:0; padding-left:30px; position:relative; }
+    .journey-path{ display:none; }
+    .journey-node{ position:relative; width:100%; text-align:left; transform:none; padding:22px 0 22px 26px; border-left:1px solid var(--line-strong); }
+    .journey-node .dot{ position:absolute; left:-7px; top:26px; margin:0; }
+    .journey-node.active{ border-left-color:var(--signal); }
+  }
+
+  /* ---------- WHY PARTICIPATE ---------- */
+  #why{ background:var(--void); padding-bottom:140px; }
+  .why-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .why-item{ background:var(--void); padding:40px 30px; transition:background .4s ease; }
+  .why-item:hover{ background:var(--void-2); }
+  .why-num{ font-family:var(--f-display); font-style:italic; font-size:44px; color:var(--signal); line-height:1; }
+  .why-num sup{ font-size:16px; top:-1.2em; }
+  .why-item h4{ font-family:var(--f-sans); font-weight:600; font-size:16px; margin:16px 0 8px; }
+  .why-item p{ font-size:13px; color:var(--ink-dim); line-height:1.6; }
+
+  @media (max-width:860px){ .why-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- BROCHURE ---------- */
+  #brochure{ background:var(--void-2); padding-bottom:150px; border-top:1px solid var(--line); }
+  .brochure-wrap{
+    display:grid; grid-template-columns:auto 1fr; gap:64px; align-items:center;
+  }
+  .booklet{
+    width:220px; height:300px; position:relative; perspective:1200px; cursor:pointer;
+    flex-shrink:0;
+  }
+  .booklet-inner{
+    width:100%; height:100%; position:relative; transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.2,.8,.2,1);
+    border:1px solid var(--line-strong);
+    background:linear-gradient(155deg, #12162a 0%, #0b0d18 60%);
+    display:flex; flex-direction:column; justify-content:space-between; padding:22px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.6);
+  }
+  .booklet:hover .booklet-inner{ transform:rotateY(-14deg) rotateX(4deg) translateZ(6px); }
+  .booklet::after{
+    content:''; position:absolute; inset:0; background:linear-gradient(120deg, transparent 30%, rgba(111,243,214,0.12) 45%, transparent 60%);
+    opacity:0; transition:opacity .4s ease; pointer-events:none;
+  }
+  .booklet:hover::after{ opacity:1; }
+  .booklet-tag{ font-family:var(--f-mono); font-size:9px; letter-spacing:0.15em; color:var(--ink-faint); }
+  .booklet-title{ font-family:var(--f-display); font-style:italic; font-size:26px; line-height:1.1; }
+  .booklet-foot{ font-family:var(--f-mono); font-size:9px; color:var(--ink-faint); display:flex; justify-content:space-between; }
+  .booklet-spine{
+    position:absolute; left:0; top:0; bottom:0; width:14px;
+    background:linear-gradient(to right, #000, transparent);
+    transform:rotateY(90deg) translateZ(-7px); transform-origin:left;
+  }
+
+  .brochure-copy .section-head{ padding-top:24px; margin-bottom:20px; }
+  .brochure-copy p{ font-size:15px; color:var(--ink-dim); line-height:1.7; max-width:46ch; margin-bottom:26px; }
+  .download-row{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .download-note{ font-family:var(--f-mono); font-size:10.5px; color:var(--ink-faint); margin-top:14px; }
+
+  @media (max-width:760px){ .brochure-wrap{ grid-template-columns:1fr; justify-items:center; text-align:center; } .brochure-copy p{ margin-left:auto; margin-right:auto; } }
+
+  /* ---------- FINAL CTA ---------- */
+  #final{
+    min-height:80vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; position:relative; overflow:hidden; padding:120px 20px;
+    background:radial-gradient(ellipse 120% 80% at 50% 100%, #0d1730 0%, var(--void) 65%);
+  }
+  #final::before{
+    content:''; position:absolute; top:0; left:50%; width:1px; height:100%;
+    background:linear-gradient(to bottom, transparent, var(--line-strong), transparent);
+  }
+  .final-eyebrow{ margin-bottom:26px; }
+  .final-headline{
+    font-family:var(--f-display); font-style:italic; font-weight:400;
+    font-size:clamp(40px,7vw,96px); line-height:1.02; max-width:900px;
+  }
+  .final-headline .accent{ color:var(--signal); font-style:normal; font-weight:500; }
+  .final-sub{ color:var(--ink-dim); max-width:520px; margin:22px 0 40px; font-size:15px; line-height:1.7; }
+  .final-ctas{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+
+  /* ---------- FOOTER ---------- */
+  footer{ background:var(--void); border-top:1px solid var(--line); padding:48px clamp(20px,5vw,64px) 32px; }
+  .foot-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:24px; margin-bottom:28px; }
+  .foot-brand{ font-family:var(--f-display); font-style:italic; font-size:22px; }
+  .foot-links{ display:flex; gap:28px; flex-wrap:wrap; font-size:13px; color:var(--ink-dim); }
+  .foot-links a:hover{ color:var(--signal); }
+  .foot-bottom{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-family:var(--f-mono); font-size:10.5px; color:var(--ink-faint);
+    padding-top:22px; border-top:1px solid var(--line);
+  }
+
+  .reveal{ opacity:0; transform:translateY(28px); }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo" data-event-name-wrap>CodeGyaan<small>OLAP&nbsp;2026</small></div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#tracks">Tracks</a>
+    <a href="sponsors.html">Partner</a>
+    <a href="#journey">Journey</a>
+    <a href="#why">Why Join</a>
+    <a href="#brochure">Brochure</a>
+  </div>
+  <a href="#register" class="nav-cta">Register</a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-vignette"></div>
+
+  <div class="hero-coords">
+    <div>SIGNAL ORIGIN <span>13.0827°N, 80.2707°E — CHENNAI</span></div>
+    <div>TRANSMISSION MODE <span>HYBRID · ONLINE + ONSITE FINALS</span></div>
+    <div>DURATION <span>72 HOURS · AUGUST 2026</span></div>
+  </div>
+
+  <div class="hero-content">
+    <div>
+      <h1 class="hero-headline">Code<span class="accent">Gyan</span></h1>
+      <p class="hero-tagline">A national hackathon transmitted from M.O.P. Vaishnav College for Women — three days for builders to pick up a signal, and send something back.</p>
+    </div>
+    <div class="hero-side">
+      <div class="hero-meta">
+        HOSTED BY<br><strong>TechGen Club</strong>, Dept. of Computer Science<br>M.O.P. Vaishnav College for Women
+      </div>
+      <div class="hero-ctas">
+        <a href="#register" class="btn btn-primary">Register</a>
+        <a href="#brochure" class="btn btn-ghost">Download Brochure</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-sponsor-line"><a href="sponsors.html">Partner with us</a><div class="arrow">→</div></div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section id="about" class="wrap">
+  <div class="section-head reveal">
+    <h2>About<br>CodeGyaan</h2>
+    <div class="section-index">01 / EVENT OVERVIEW</div>
+  </div>
+  <div class="about-grid">
+    <div class="about-copy reveal">
+      <p><span class="drop">C</span>CodeGyaan is an inter-collegiate hackathon that brings together passionate innovators, developers, designers, and problem-solvers to create impactful technology solutions for real-world challenges.</p>
+      <p>Centered around the theme "AI for Inclusive Digital Transformation", the hackathon encourages participants to harness Artificial Intelligence to build solutions that are accessible, ethical, sustainable, and socially impactful.</p>
+      <p>Over three exciting days, participants will collaborate, innovate, and transform ideas into functional prototypes while receiving mentorship from experts and presenting their solutions before an esteemed panel of judges.</p>
+      <div class="about-pull">A hybrid hackathon for real-world innovation.</div>
+    </div>
+    <div class="about-visual reveal">
+      <svg class="orbit-svg" viewBox="0 0 400 400" id="orbit-svg">
+        <circle class="orbit-ring" cx="200" cy="200" r="70"/>
+        <circle class="orbit-ring" cx="200" cy="200" r="130"/>
+        <circle class="orbit-ring" cx="200" cy="200" r="190"/>
+        <circle class="orbit-dot" cx="200" cy="30" r="4" id="orbit-dot-1"/>
+        <circle class="orbit-dot" cx="330" cy="200" r="3" id="orbit-dot-2" style="fill:#9b8cff; filter:drop-shadow(0 0 6px #9b8cff)"/>
+        <circle cx="200" cy="200" r="3.5" fill="#edece6"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HIGHLIGHTS ============ -->
+<section id="highlights">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Signal<br>highlights</h2>
+      <div class="section-index">02 / WHAT DEFINES IT</div>
+    </div>
+  </div>
+  <div class="bento wrap" style="padding:0 0; max-width:1280px; margin:0 auto; padding-left:clamp(20px,5vw,64px); padding-right:clamp(20px,5vw,64px);">
+    <div class="bento-card b1 reveal">
+      <div class="glyph">N-01</div>
+      <div class="icon">◈</div>
+      <div>
+        <h3>National level hackathon</h3>
+        <p>Teams from campuses across the country compete on a single shared set of tracks and a single finale.</p>
+      </div>
+    </div>
+    <div class="bento-card b2 reveal">
+      <div class="glyph">N-02</div>
+      <div class="icon">⇄</div>
+      <h3>Hybrid mode</h3>
+      <p>Build from anywhere online, then present in person at the Chennai finale.</p>
+    </div>
+    <div class="bento-card b3 reveal">
+      <div class="glyph">N-03</div>
+      <div class="icon">◷</div>
+      <h3>3-day event</h3>
+      <p>From kickoff to awards, structured for a sustainable, focused sprint.</p>
+    </div>
+    <div class="bento-card b4 reveal">
+      <div class="glyph">N-04</div>
+      <div class="icon">⟡</div>
+      <div>
+        <h3>Mentoring &amp; guidance</h3>
+        <p>Working engineers and founders check in through development to unblock and sharpen your build.</p>
+      </div>
+    </div>
+    <div class="bento-card b5 reveal">
+      <div class="glyph">N-05</div>
+      <div class="icon">◎</div>
+      <h3>Team collaboration</h3>
+      <p>Built for teams — divide the problem, combine the skills.</p>
+    </div>
+    <div class="bento-card b6 reveal">
+      <div class="glyph">N-06</div>
+      <div class="icon">▤</div>
+      <h3>Real-world challenges</h3>
+      <p>Problem statements are drawn from live industry needs, not hypotheticals.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRACKS ============ -->
+<section id="tracks" class="wrap">
+  <div class="section-head reveal">
+    <h2>Choose your<br>frequency</h2>
+    <div class="section-index">03 / SIX TRACKS</div>
+  </div>
+  <div class="track-grid">
+
+    <div class="track-card reveal" style="--tc:#ff8c7a" data-tilt>
+      <div class="track-num">CH.01</div>
+      <div class="track-icon">✚</div>
+      <div>
+        <h3>Healthcare</h3>
+        <p>Diagnostics, telemedicine, patient data tools, and responsible AI for health.</p>
+      </div>
+      <div class="track-soon">Problem statements coming soon</div>
+    </div>
+
+    <div class="track-card reveal" style="--tc:#9b8cff" data-tilt>
+      <div class="track-num">CH.02</div>
+      <div class="track-icon">◫</div>
+      <div>
+        <h3>Blockchain &amp; Web</h3>
+        <p>Immutable ledgers, smart contract automation, and decentralized trust.</p>
+      </div>
+      <div class="track-soon">Problem statements coming soon</div>
+    </div>
+
+    <div class="track-card reveal" style="--tc:#6ff3d6" data-tilt>
+      <div class="track-num">CH.03</div>
+      <div class="track-icon">↗</div>
+      <div>
+        <h3>FinTech</h3>
+        <p>Financial inclusion, fraud detection, payment UX, and responsible data use.</p>
+      </div>
+      <div class="track-soon">Problem statements coming soon</div>
+    </div>
+
+    <div class="track-card reveal" style="--tc:#ffd27a" data-tilt>
+      <div class="track-num">CH.04</div>
+      <div class="track-icon">⚙</div>
+      <div>
+        <h3>Automation</h3>
+        <p>Smart workflows, process optimization, and intelligent task scheduling.</p>
+      </div>
+      <div class="track-soon">Problem statements coming soon</div>
+    </div>
+
+    <div class="track-card reveal" style="--tc:#7ad1ff" data-tilt>
+      <div class="track-num">CH.05</div>
+      <div class="track-icon">◑</div>
+      <div>
+        <h3>AR / VR</h3>
+        <p>Immersive experiences, spatial computing, and interactive environments.</p>
+      </div>
+      <div class="track-soon">Problem statements coming soon</div>
+    </div>
+
+    <div class="track-card reveal" style="--tc:#ff6f91" data-tilt>
+      <div class="track-num">CH.06</div>
+      <div class="track-icon">⛨</div>
+      <div>
+        <h3>Cybersecurity</h3>
+        <p>Secure-by-design prototypes, threat detection, and privacy-preserving tools.</p>
+      </div>
+      <div class="track-soon">Problem statements coming soon</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ JOURNEY ============ -->
+<section id="journey">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>The mission<br>timeline</h2>
+      <div class="section-index">04 / PARTICIPANT JOURNEY</div>
+    </div>
+  </div>
+
+  <div class="wrap journey-track">
+    <svg class="journey-path" viewBox="0 0 1200 300" preserveAspectRatio="none">
+      <path id="journey-base" class="journey-line" d="M 120 150 C 240 40, 360 260, 480 150 S 720 40, 840 150 S 960 260, 1080 150" />
+      <path id="journey-fill" class="journey-line-fill" d="M 120 150 C 240 40, 360 260, 480 150 S 720 40, 840 150 S 960 260, 1080 150" />
+    </svg>
+
+    <div class="journey-node" data-pos="120,150" data-idx="0">
+      <div class="dot"></div>
+      <div class="jn-index">WP.01</div>
+      <h4>Registration</h4>
+      <p>Teams form and lock in their track.</p>
+    </div>
+    <div class="journey-node" data-pos="360,60" data-idx="1">
+      <div class="dot"></div>
+      <div class="jn-index">WP.02</div>
+      <h4>Theme Reveal</h4>
+      <p>Tracks and challenge areas go live at kickoff.</p>
+    </div>
+    <div class="journey-node" data-pos="600,150" data-idx="2">
+      <div class="dot"></div>
+      <div class="jn-index">WP.03</div>
+      <h4>Development</h4>
+      <p>Online build sprint across day two.</p>
+    </div>
+    <div class="journey-node" data-pos="840,60" data-idx="4">
+      <div class="dot"></div>
+      <div class="jn-index">WP.05</div>
+      <h4>Final Presentation</h4>
+      <p>Demos and judging at the Chennai finale.</p>
+    </div>
+    <div class="journey-node" data-pos="1160,150" data-idx="5">
+      <div class="dot"></div>
+      <div class="jn-index">WP.06</div>
+      <h4>Awards</h4>
+      <p>Recognition for the strongest transmissions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY PARTICIPATE ============ -->
+<section id="why" class="wrap">
+  <div class="section-head reveal">
+    <h2>Why come<br>aboard</h2>
+    <div class="section-index">05 / VALUE FOR PARTICIPANTS</div>
+  </div>
+  <div class="why-grid">
+    <div class="why-item reveal">
+      <div class="why-num" data-count="72"><span>0</span><sup>hrs</sup></div>
+      <h4>Focused learning</h4>
+      <p>Compress months of self-teaching into a single intense build sprint.</p>
+    </div>
+    <div class="why-item reveal">
+      <div class="why-num" data-count="6"><span>0</span><sup>tracks</sup></div>
+      <h4>Industry exposure</h4>
+      <p>Work on problem spaces shaped by people currently building in them.</p>
+    </div>
+    <div class="why-item reveal">
+      <div class="why-num" data-count="100"><span>0</span><sup>+</sup></div>
+      <h4>Networking</h4>
+      <p>Meet builders, mentors, and reviewers from outside your own campus.</p>
+    </div>
+    <div class="why-item reveal">
+      <div class="why-num" data-count="1"><span>0</span><sup>demo</sup></div>
+      <h4>Real feedback</h4>
+      <p>Present to reviewers who will tell you plainly what does and doesn't work.</p>
+    </div>
+    <div class="why-item reveal">
+      <div class="why-num" data-count="3"><span>0</span><sup>days</sup></div>
+      <h4>Innovation, fast</h4>
+      <p>An idea, a working prototype, and a pitch — in one sprint.</p>
+    </div>
+    <div class="why-item reveal">
+      <div class="why-num" data-count="1"><span>0</span><sup>line</sup></div>
+      <h4>Career opportunities</h4>
+      <p>A shipped, demoable project — a genuine line on your resume.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BROCHURE ============ -->
+<section id="brochure" class="wrap">
+  <div class="brochure-wrap">
+    <a class="booklet" href="https://drive.google.com/file/d/1dLGKXhPkP5BCb84zP7mWeO88_wkC8HEc/view?usp=sharing" target="_blank" rel="noopener" aria-label="Open the CodeGyaan brochure (Drive)">
+      <div class="booklet-inner">
+        <div class="booklet-spine"></div>
+        <div class="booklet-tag">PDF · TRANSMISSION BRIEF</div>
+        <div class="booklet-title">CodeGyaan<br>2026</div>
+        <div class="booklet-foot"><span>OLAP · TechGen</span><span>↓</span></div>
+      </div>
+    </a>
+    <div class="brochure-copy">
+      <div class="section-head reveal" style="margin-bottom:0;">
+        <h2>Read the<br>full brief</h2>
+      </div>
+      <p style="margin-top:24px;">Tracks, timeline, and everything your team needs to prepare — in one document. Tap the cover to download.</p>
+      <div class="download-row">
+        <a href="https://drive.google.com/file/d/1dLGKXhPkP5BCb84zP7mWeO88_wkC8HEc/view?usp=sharing" class="btn btn-primary" target="_blank" rel="noopener">Download Brochure</a>
+        <a href="#register" class="btn btn-ghost">Register instead</a>
+      </div>
+      <div class="download-note">BROCHURE: hosted on Google Drive — opens in a new tab.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section id="final">
+  <div class="eyebrow final-eyebrow">SIGNAL WINDOW OPEN</div>
+  <h2 class="final-headline">Send something<br>back to <span class="accent">CodeGyaan</span></h2>
+  <p class="final-sub">Registration is open for teams ready to spend three days building something real. Bring your team, pick a track, and get on the frequency.</p>
+  <div class="final-ctas">
+    <a href="#register" id="register" class="btn btn-primary">Register your team</a>
+    <a href="#brochure" class="btn btn-ghost">Download Brochure</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="padding:0;">
+    <div class="foot-grid">
+      <div class="foot-brand">CodeGyaan</div>
+      <div class="foot-links">
+        <a href="#about">About</a>
+        <a href="#tracks">Tracks</a>
+        <a href="#journey">Journey</a>
+        <a href="#why">Why Join</a>
+        <a href="#brochure">Brochure</a>
+        <a href="mailto:techgen.club.mop@gmail.com">techgen.club.mop@gmail.com</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>OLAP 2026 · HOSTED BY TECHGEN CLUB, DEPT. OF COMPUTER SCIENCE, M.O.P. VAISHNAV COLLEGE FOR WOMEN</span>
+      <span>CHENNAI, INDIA</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   EASY RENAME: update this constant, then every element tagged
+   [data-event-name-wrap] / [data-event-name] would pick it up.
+   The markup above currently spells "CodeGyaan" directly so the
+   client can literally find/replace it, but this constant is
+   kept in sync for anywhere the name is injected dynamically.
+   ============================================================ */
+const EVENT_NAME = "CodeGyaan";
+
+/* ---------------- THREE.JS HERO SCENE ---------------- */
+(function heroScene(){
+  const canvas = document.getElementById('hero-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.set(0, 0, 9);
+
+  function resize(){
+    const hero = document.getElementById('hero');
+    const w = hero.clientWidth, h = hero.clientHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Starfield
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 1400;
+  const positions = new Float32Array(starCount*3);
+  for(let i=0;i<starCount;i++){
+    positions[i*3] = (Math.random()-0.5)*40;
+    positions[i*3+1] = (Math.random()-0.5)*40;
+    positions[i*3+2] = (Math.random()-0.5)*40 - 5;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+  const starMat = new THREE.PointsMaterial({ color:0xedece6, size:0.045, transparent:true, opacity:0.65 });
+  const stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  // Wireframe core (satellite/observatory instrument)
+  const coreGroup = new THREE.Group();
+  const icoGeo = new THREE.IcosahedronGeometry(2.1, 1);
+  const icoMat = new THREE.MeshBasicMaterial({ color:0x6ff3d6, wireframe:true, transparent:true, opacity:0.5 });
+  const ico = new THREE.Mesh(icoGeo, icoMat);
+  coreGroup.add(ico);
+
+  const ringGeo = new THREE.TorusGeometry(3.1, 0.008, 8, 100);
+  const ringMat = new THREE.MeshBasicMaterial({ color:0xffb55e, transparent:true, opacity:0.55 });
+  const ring1 = new THREE.Mesh(ringGeo, ringMat);
+  ring1.rotation.x = Math.PI/2.4;
+  const ring2 = new THREE.Mesh(ringGeo, ringMat.clone());
+  ring2.material.color.set(0x9b8cff);
+  ring2.rotation.x = Math.PI/1.6;
+  ring2.scale.setScalar(1.25);
+  coreGroup.add(ring1, ring2);
+
+  coreGroup.position.set(2.6, 0.6, 0);
+  scene.add(coreGroup);
+
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e)=>{
+    mouseX = (e.clientX / window.innerWidth - 0.5);
+    mouseY = (e.clientY / window.innerHeight - 0.5);
+  });
+
+  const clock = new THREE.Clock();
+  function animate(){
+    const t = clock.getElapsedTime();
+    stars.rotation.y = t * 0.008;
+    coreGroup.rotation.y = t * 0.12;
+    coreGroup.rotation.x = t * 0.05;
+    ring1.rotation.z = t * 0.1;
+    ring2.rotation.z = -t * 0.08;
+
+    camera.position.x += (mouseX*0.6 - camera.position.x) * 0.02;
+    camera.position.y += (-mouseY*0.4 - camera.position.y) * 0.02;
+    camera.lookAt(0.6,0,0);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    animate();
+  } else {
+    renderer.render(scene, camera);
+  }
+})();
+
+/* ---------------- GSAP SCROLL REVEALS ---------------- */
+gsap.registerPlugin(ScrollTrigger);
+
+document.querySelectorAll('.reveal').forEach((el)=>{
+  gsap.to(el, {
+    opacity:1, y:0, duration:0.9, ease:'power3.out',
+    scrollTrigger:{ trigger:el, start:'top 85%' }
+  });
+});
+
+gsap.utils.toArray('.bento-card').forEach((el,i)=>{
+  gsap.fromTo(el, {opacity:0, y:24}, {
+    opacity:1, y:0, duration:0.7, delay:(i%3)*0.06, ease:'power2.out',
+    scrollTrigger:{ trigger:el, start:'top 90%' }
+  });
+});
+
+gsap.utils.toArray('.track-card').forEach((el,i)=>{
+  gsap.fromTo(el, {opacity:0, y:30}, {
+    opacity:1, y:0, duration:0.7, delay:(i%3)*0.08, ease:'power2.out',
+    scrollTrigger:{ trigger:el, start:'top 90%' }
+  });
+});
+
+/* Track card pointer-reactive glow */
+document.querySelectorAll('[data-tilt]').forEach((card)=>{
+  card.addEventListener('mousemove', (e)=>{
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+    card.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
+  });
+});
+
+/* ---------------- JOURNEY: draw path + activate nodes on scroll ---------------- */
+(function journey(){
+  const svg = document.getElementById('journey-fill');
+  const len = svg.getTotalLength();
+  svg.style.strokeDasharray = len;
+  svg.style.strokeDashoffset = len;
+
+  const nodes = document.querySelectorAll('.journey-node');
+
+  function positionNodes(){
+    if (window.innerWidth <= 1000) return; // stacked layout on mobile, skip absolute positioning
+    const track = document.querySelector('.journey-track');
+    const w = track.clientWidth, h = track.clientHeight;
+    nodes.forEach((n)=>{
+      const [x,y] = n.dataset.pos.split(',').map(Number);
+      n.style.left = (x/1200*w) + 'px';
+      n.style.top = (y/300*h) + 'px';
+    });
+  }
+  positionNodes();
+  window.addEventListener('resize', positionNodes);
+
+  ScrollTrigger.create({
+    trigger: '.journey-track',
+    start: 'top 70%',
+    end: 'bottom 40%',
+    scrub: 0.6,
+    onUpdate: (self)=>{
+      svg.style.strokeDashoffset = len * (1 - self.progress);
+      const activeCount = Math.floor(self.progress * nodes.length + 0.3);
+      nodes.forEach((n,i)=> n.classList.toggle('active', i < activeCount));
+    }
+  });
+})();
+
+/* ---------------- ANIMATED COUNTERS ---------------- */
+document.querySelectorAll('.why-num').forEach((el)=>{
+  const target = parseInt(el.dataset.count, 10);
+  const span = el.querySelector('span');
+  ScrollTrigger.create({
+    trigger: el,
+    start: 'top 88%',
+    once: true,
+    onEnter: ()=>{
+      const obj = { val: 0 };
+      gsap.to(obj, {
+        val: target, duration: 1.4, ease:'power2.out',
+        onUpdate: ()=> span.textContent = Math.round(obj.val)
+      });
+    }
+  });
+});
+
+/* ---------------- ORBIT ILLUSTRATION ---------------- */
+(function orbit(){
+  const dot1 = document.getElementById('orbit-dot-1');
+  const dot2 = document.getElementById('orbit-dot-2');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let a1 = 0, a2 = 0;
+  function loop(){
+    a1 += 0.006; a2 -= 0.009;
+    dot1.setAttribute('cx', 200 + 130*Math.cos(a1));
+    dot1.setAttribute('cy', 200 + 130*Math.sin(a1));
+    dot2.setAttribute('cx', 200 + 190*Math.cos(a2));
+    dot2.setAttribute('cy', 200 + 190*Math.sin(a2));
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ---------------- BROCHURE PLACEHOLDER GUARD ----------------
+   Until the real PDF is uploaded to /assets/codegyaan-brochure.pdf,
+   clicking download shows a friendly notice instead of a 404.
+------------------------------------------------------------- */
+document.querySelectorAll('[data-brochure-link]').forEach((link)=>{
+  link.addEventListener('click', (e)=>{
+    e.preventDefault();
+    alert('Brochure coming soon — this button is wired to /assets/' + 'codegyaan-brochure.pdf and will work as soon as that file is uploaded.');
+  });
+});
+</script>
+
+</body>
+</html>
