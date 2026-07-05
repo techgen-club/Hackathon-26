@@ -72,7 +72,18 @@
   .contact-card a{ color:var(--signal); }
   .footer{ padding:40px 0 60px; color:var(--ink-faint); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; border-top:1px solid rgba(237,236,230,0.08); }
   @media (max-width:980px){ .hero, .split-grid, .grid-2{ grid-template-columns:1fr; } }
-  @media (max-width:720px){ .hero{ padding-top:80px; } .hero-actions{ flex-direction:column; align-items:start; } }
+  @media (max-width:720px){
+    .wrap{ padding:0 20px; }
+    .hero{ padding-top:80px; padding-bottom:56px; gap:24px; }
+    .hero h1{ font-size:clamp(36px,8vw,52px); }
+    .hero p{ font-size:15px; }
+    .hero-actions{ flex-direction:column; align-items:start; }
+    .hero-card{ padding:24px 20px; }
+    .section-head{ flex-direction:column; align-items:flex-start; gap:10px; margin-bottom:24px; }
+    .section{ padding-bottom:56px; }
+    .feature-card, .value-panel, .kit-card, .contact-card{ padding:22px; }
+    .btn{ width:100%; justify-content:center; }
+  }
 </style>
 </head>
 <body>
